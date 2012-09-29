@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FacebookGeneralServices</string>
+	<string name="facebook_app_client_id">121673814559507</string>
+</resources>
