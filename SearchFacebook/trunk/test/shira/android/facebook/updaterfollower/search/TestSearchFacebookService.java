@@ -57,7 +57,7 @@ public class TestSearchFacebookService extends Activity
 			if (searchFacebookServer!=null) 
 			{
 				searchFacebookServer.searchFacebook(searchParamsMap,
-						extraCriteria,thresholdTester,completeListener);
+						extraCriteria,thresholdTester,completeListener,null);
 			}
 		}
 	}

@@ -95,7 +95,8 @@ public class SearchFacebookService extends Service
 	{
 		public void searchFacebook(Map<String,String> searchQueryParamsMap,
 				ExtraCriteria extraCriteria,SearchThresholdTester
-				thresholdTester,SearchCompleteCallback searchCallback)
+				thresholdTester,SearchCompleteCallback searchCallback,
+				Handler callbackHandler) 
 		{
 			if (searchQueryParamsMap==null)
 				throw new NullPointerException("The map of parameters for the " + 
@@ -107,7 +108,7 @@ public class SearchFacebookService extends Service
 				searchQueryParamsMap.put("access_token",accessToken);
 			SearchFacebookService.SearchTask searchTask=new SearchTask(
 					searchQueryParamsMap,extraCriteria,thresholdTester,
-					searchCallback);
+					searchCallback,callbackHandler);
 			searchTasksExecutor.execute(searchTask);
 		}
 	}
@@ -119,16 +120,18 @@ public class SearchFacebookService extends Service
 		private SearchThresholdTester thresholdTester;
 		//private String accessToken;
 		private SearchCompleteCallback searchCallback;
+		private Handler callbackHandler;
 		
 		public SearchTask(Map<String,String> searchQueryMap,ExtraCriteria 
 				extraCriteria,SearchThresholdTester thresholdTester,
-				SearchCompleteCallback searchCallback)
+				SearchCompleteCallback searchCallback,Handler callbackHandler)
 		{
 			this.searchQueryMap=searchQueryMap;
 			this.extraCriteria=extraCriteria;
 			this.thresholdTester=thresholdTester;
 			//this.accessToken=accessToken;
 			this.searchCallback=searchCallback;
+			this.callbackHandler=callbackHandler;
 		}
 		
 		@Override public void run() 
@@ -143,8 +146,10 @@ public class SearchFacebookService extends Service
 			catch (Exception exception) { thrownException=exception; }
 			final List<Map<String,Object>> resultDataArrayFinal=resultDataArray;
 			final Exception thrownExceptionFinal=thrownException; 
-			Handler mainThreadHandler=new Handler(getMainLooper());
-			mainThreadHandler.post(new Runnable()
+			Handler completionHandler;
+			if (callbackHandler!=null) completionHandler=callbackHandler;
+			else completionHandler=new Handler(getMainLooper());
+			completionHandler.post(new Runnable()
 			{
 				public void run() 
 				{ 
