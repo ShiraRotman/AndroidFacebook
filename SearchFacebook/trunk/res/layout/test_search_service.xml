@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="fill_parent" 
+    android:orientation="vertical">
+    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
+    	android:orientation="horizontal">
+        <EditText android:layout_width="0dp" android:layout_height="wrap_content"
+            android:hint="Enter query..." android:id="@+id/query_edit" 
+            android:layout_weight="0.33" android:textSize="12sp"/>
+        <EditText android:layout_width="0dp" android:layout_height="wrap_content"
+            android:hint="Enter type..." android:id="@+id/type_edit" android:layout_weight="0.33"
+            android:textSize="12sp"/>
+        <EditText android:layout_width="0dp" android:layout_height="wrap_content"
+            android:hint="Enter category..." android:id="@+id/category_edit"
+            android:layout_weight="0.33" android:textSize="12sp"/>
+        <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Search" android:id="@+id/search_button"/>
+    </LinearLayout>
+    <TextView android:layout_width="fill_parent" android:layout_height="fill_parent"
+        android:id="@+id/result_text" android:background="@android:color/white"/>
+</LinearLayout>
