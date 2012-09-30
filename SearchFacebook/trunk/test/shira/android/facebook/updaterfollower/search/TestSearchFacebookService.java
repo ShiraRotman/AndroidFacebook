@@ -79,25 +79,23 @@ public class TestSearchFacebookService extends Activity
 	private class SearchCompleteListener implements SearchFacebookService.
 			SearchCompleteCallback
 	{
-		@Override public void searchCompleted(List<Map<String,Object>> result,
-				Exception exception) 
+		@Override public void searchSucceeded(List<Map<String,Object>> result)
 		{
-			if (exception!=null) throw new RuntimeException(exception);
-			else
-			{
-				StringBuilder resultTextBuilder=new StringBuilder();
-				for (Map<String,Object> resultElement:result)
-					for (String propertyName:resultElement.keySet())
-					{
-						resultTextBuilder.append(propertyName);
-						resultTextBuilder.append(": ");
-						resultTextBuilder.append(resultElement.get(propertyName)
-								.toString());
-					}
-				TextView resultTextView=(TextView)findViewById(R.id.result_text);
-				resultTextView.setText(resultTextBuilder.toString());
-			}
+			StringBuilder resultTextBuilder=new StringBuilder();
+			for (Map<String,Object> resultElement:result)
+				for (String propertyName:resultElement.keySet())
+				{
+					resultTextBuilder.append(propertyName);
+					resultTextBuilder.append(": ");
+					resultTextBuilder.append(resultElement.get(propertyName)
+							.toString());
+				}
+			TextView resultTextView=(TextView)findViewById(R.id.result_text);
+			resultTextView.setText(resultTextBuilder.toString());
 		}
+
+		@Override public void searchFailed(Exception exception) 
+		{ throw new RuntimeException(exception); }
 	}
 	
 	@Override protected void onCreate(Bundle savedInstanceState)

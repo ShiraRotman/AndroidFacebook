@@ -64,7 +64,7 @@ public class SearchFacebookService extends Service
 				else categories.clear();
 				for (String category:categoriesArray)
 				{
-					if (!category.equals(""))
+					if ((category!=null)&&(!category.equals("")))
 					{
 						String casedCategory=category.substring(0,1).toUpperCase() + 
 								(category.length()>1?category.substring(1).
@@ -85,8 +85,8 @@ public class SearchFacebookService extends Service
 	
 	public static interface SearchCompleteCallback
 	{
-		public void searchCompleted(List<Map<String,Object>> result,
-				Exception exception);
+		public void searchSucceeded(List<Map<String,Object>> result);
+		public void searchFailed(Exception exception);
 	}
 	
 	public class SearchFacebookServer extends Binder
@@ -150,9 +150,10 @@ public class SearchFacebookService extends Service
 			completionHandler.post(new Runnable()
 			{
 				public void run() 
-				{ 
-					searchCallback.searchCompleted(resultDataArrayFinal,
-							thrownExceptionFinal); 
+				{
+					if (resultDataArrayFinal!=null)
+						searchCallback.searchSucceeded(resultDataArrayFinal);
+					else searchCallback.searchFailed(thrownExceptionFinal);
 				}
 			});
 		}
