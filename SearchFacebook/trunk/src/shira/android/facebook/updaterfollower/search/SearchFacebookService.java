@@ -40,17 +40,14 @@ public class SearchFacebookService extends Service
 		 *reason the only criterion for now is wrapped, so the interface with 
 		 *the client won't have to change for every new option added.*/
 		
-		public ExtraCriteria(Set<String> categories) 
-		{ setCategories(categories); }
+		public ExtraCriteria(String[] categoriesArray) 
+		{ setCategories(categoriesArray); }
 		
-		/*There is no getter function for the categories field because it 
-		 *undergoes changes whenever set to adapt it for searching, and I don't 
-		 *want the caller to change it. I could create a new set and copy the 
-		 *original to it, but I have no way to know the exact run-time type of 
-		 *the set, and thus will have to use one I choose, which might confuse
-		 *the caller.*/
+		/*There is no getter function for the categories field because it's not 
+		 *stored exactly as the caller supplied it (the array is converted into 
+		 *a set).*/
 		
-		public void setCategories(Set<String> categories)
+		public void setCategories(String[] categoriesArray)
 		{
 			/*In order to guarantee matches, I'm using the assumption that every 
 			 *Facebook page category has only the first letter capitalized, even 
@@ -60,24 +57,25 @@ public class SearchFacebookService extends Service
 			 *only exact (but case-insensitive) matches are supported. This may 
 			 *be expanded to handle prefix matches by using a prefix tree, or 
 			 *more complex matches.*/
-			List<String> categoriesList=new ArrayList<String>();
-			for (String category:categories)
+			if (categoriesArray==null) categories=null;
+			else
 			{
-				if (!category.equals(""))
+				if (categories==null) categories=new HashSet<String>();
+				else categories.clear();
+				for (String category:categoriesArray)
 				{
-					String casedCategory=category.substring(0,1).toUpperCase() + 
-							(category.length()>1?category.substring(1).
-							toLowerCase():"");
-					Log.i("Facebook","Cased category: " + casedCategory); 
-					categoriesList.add(casedCategory);
+					if (!category.equals(""))
+					{
+						String casedCategory=category.substring(0,1).toUpperCase() + 
+								(category.length()>1?category.substring(1).
+								toLowerCase():"");
+						Log.i("Facebook","Cased category: " + casedCategory); 
+						categories.add(casedCategory);
+					}
 				}
 			}
-			categories.clear();
-			for (String category:categoriesList) categories.add(category);
-			Log.i("Facebook","Size: " + categories.size());
-			this.categories=categories;
-		}
-	}
+		} //end setCategories
+	} //end ExtraCriteria
 	
 	public static interface SearchThresholdTester
 	{

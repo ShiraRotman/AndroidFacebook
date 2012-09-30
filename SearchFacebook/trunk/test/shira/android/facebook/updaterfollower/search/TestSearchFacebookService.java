@@ -38,16 +38,14 @@ public class TestSearchFacebookService extends Activity
 			if (categoriesInput!=null)
 			{
 				String[] categories=categoriesInput.split(",");
-				Set<String> categoriesSet=new HashSet<String>();
-				for (String category:categories) categoriesSet.add(category);
 				if (extraCriteria==null)
 				{
 					//categoriesSet=new HashSet<String>();
 					extraCriteria=new SearchFacebookService.ExtraCriteria(
-							categoriesSet);
+							categories);
 				}
 				//else categoriesSet=extraCriteria.categories;
-				else extraCriteria.setCategories(categoriesSet);
+				else extraCriteria.setCategories(categories);
 			}
 			if (thresholdTester==null) 
 				thresholdTester=new SearchThresholdTester(); 
