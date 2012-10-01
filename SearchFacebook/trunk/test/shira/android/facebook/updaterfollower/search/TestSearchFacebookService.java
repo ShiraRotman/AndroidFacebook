@@ -67,12 +67,12 @@ public class TestSearchFacebookService extends Activity
 		
 		public void resetTimes() { nextTimes=0; prevTimes=0; }
 		
-		@Override public boolean searchPreviousRecords(Long threshold) 
-		{ return ((++prevTimes)<=4); }
+		@Override public int searchPreviousRecords(int limit,Long threshold) 
+		{ return ((++prevTimes)<=4?25:0); }
 		//{ return false; }
 		
-		@Override public boolean searchNextRecords(Long threshold) 
-		{ return ((++nextTimes)<=3); }
+		@Override public int searchNextRecords(int limit,Long threshold) 
+		{ return ((++nextTimes)<=3?25:0); }
 		//{ return false; }
 	}
 	

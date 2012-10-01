@@ -5,6 +5,8 @@ import java.net.*;
 //import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import javax.net.ssl.HttpsURLConnection;
 
 //import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +23,7 @@ public class SearchFacebookService extends Service
 	public static final String DEFUALT_ACCESS_TOKEN_KEY_NAME="shira.android." +
 			"facebook.ACCESS_TOKEN";*/
 	public static final String FAILED_FILTER_KEY_NAME="failed_filter";
+	public static final Pattern limitPattern=Pattern.compile("\\&limit=\\d+");
 	
 	/*In the future this service may be expanded to use a custom Executor in 
 	 *order to be able to handle more requests from more clients. In this case 
@@ -79,8 +82,9 @@ public class SearchFacebookService extends Service
 	
 	public static interface SearchThresholdTester
 	{
-		public boolean searchPreviousRecords(Long threshold);
-		public boolean searchNextRecords(Long threshold);
+		//The limit includes additional filtering
+		public int searchPreviousRecords(int limit,Long threshold);
+		public int searchNextRecords(int limit,Long threshold);
 	}
 	
 	public static interface SearchCompleteCallback
@@ -387,6 +391,7 @@ public class SearchFacebookService extends Service
 		prevAddress.setLength(0);
 		if (pagingObjectMap!=null)
 		{
+			int limit;
 			Object resultAddressObject=pagingObjectMap.get("next");
 			if (resultAddressObject!=null)
 			{
@@ -397,8 +402,13 @@ public class SearchFacebookService extends Service
 					threshold=extractThreshold(resultAddress,"until");
 				//For cursor-based pagination, there's no numeric threshold
 				Long thresholdWrapper=(threshold>-1?threshold:null);
-				if (thresholdTester.searchNextRecords(thresholdWrapper))
-					nextAddress.append(resultAddress);
+				limit=thresholdTester.searchNextRecords(filteredDataArray.
+						size(),thresholdWrapper);
+				if (limit>0)
+				{
+					nextAddress.append(limitPattern.matcher(resultAddress).
+							replaceFirst("&limit=" + limit));
+				}
 				Log.i("Facebook","Next: " + nextAddress);
 			}
 			resultAddressObject=pagingObjectMap.get("previous");
@@ -410,8 +420,13 @@ public class SearchFacebookService extends Service
 				if (threshold==-1) 
 					threshold=extractThreshold(resultAddress,"since");
 				Long thresholdWrapper=(threshold>-1?threshold:null);
-				if (thresholdTester.searchPreviousRecords(thresholdWrapper))
-					prevAddress.append(resultAddress);
+				limit=thresholdTester.searchPreviousRecords(filteredDataArray.
+						size(),thresholdWrapper);
+				if (limit>0)
+				{
+					prevAddress.append(limitPattern.matcher(resultAddress).
+							replaceFirst("&limit=" + limit));
+				}
 				Log.i("Facebook","Prev: " + prevAddress);
 			}
 		} //end if pagingObjectMap!=null
