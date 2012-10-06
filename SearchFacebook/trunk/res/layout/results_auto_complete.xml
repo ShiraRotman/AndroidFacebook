@@ -2,5 +2,9 @@
 <AutoCompleteTextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:background="@drawable/text_view_background" android:textCursorDrawable="@null" 
-    android:textColor="@android:color/black" android:paddingLeft="7dp" 
-    android:dropDownSelector="@android:color/holo_blue_dark"/>
+    android:textColor="@android:color/black" android:inputType="textNoSuggestions"
+    android:paddingLeft="7dp">
+    <!-- android:dropDownSelector="@drawable/drop_down_selector"> -->
+    <!-- android:dropDownSelector="#FF400000"/> -->
+    <!-- style="@style/AutoCompleteDropDown"> -->
+</AutoCompleteTextView>
