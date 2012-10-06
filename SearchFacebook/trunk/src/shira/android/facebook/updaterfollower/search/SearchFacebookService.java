@@ -6,7 +6,6 @@ import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import javax.net.ssl.HttpsURLConnection;
 
 //import com.fasterxml.jackson.databind.ObjectMapper;
@@ -145,21 +144,30 @@ public class SearchFacebookService extends Service
 				resultDataArray=searchFacebook(searchQueryMap,extraCriteria,
 						thresholdTester); 
 			}
-			catch (Exception exception) { thrownException=exception; }
-			final List<Map<String,Object>> resultDataArrayFinal=resultDataArray;
-			final Exception thrownExceptionFinal=thrownException; 
-			Handler completionHandler;
-			if (callbackHandler!=null) completionHandler=callbackHandler;
-			else completionHandler=new Handler(getMainLooper());
-			completionHandler.post(new Runnable()
+			catch (Exception exception) { thrownException=exception; } 
+			if (callbackHandler==null) 
+				publishSearchOutput(resultDataArray,thrownException);
+			else
 			{
-				public void run() 
+				final List<Map<String,Object>> resultDataArrayFinal=resultDataArray;
+				final Exception thrownExceptionFinal=thrownException;
+				callbackHandler.post(new Runnable()
 				{
-					if (resultDataArrayFinal!=null)
-						searchCallback.searchSucceeded(resultDataArrayFinal);
-					else searchCallback.searchFailed(thrownExceptionFinal);
-				}
-			});
+					public void run() 
+					{ 
+						publishSearchOutput(resultDataArrayFinal,
+								thrownExceptionFinal);
+					}
+				});
+			}
+		}
+		
+		private void publishSearchOutput(List<Map<String,Object>> resultDataArray,
+				Exception thrownException)
+		{
+			if (resultDataArray!=null)
+				searchCallback.searchSucceeded(resultDataArray);
+			else searchCallback.searchFailed(thrownException);
 		}
 	}
 	

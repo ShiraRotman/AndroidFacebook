@@ -7,6 +7,7 @@ import shira.android.facebook.FacebookAuthActivity;
 import android.app.Activity;
 import android.content.*;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
@@ -55,7 +56,8 @@ public class TestSearchFacebookService extends Activity
 			if (searchFacebookServer!=null) 
 			{
 				searchFacebookServer.searchFacebook(searchParamsMap,
-						extraCriteria,thresholdTester,completeListener,null);
+						extraCriteria,thresholdTester,completeListener,
+						new Handler(getMainLooper()));
 			}
 		}
 	}
@@ -124,9 +126,14 @@ public class TestSearchFacebookService extends Activity
 			}
 			else if (resultCode==RESULT_CANCELED)
 			{
-				String errorMessage=data.getStringExtra(FacebookAuthActivity.
-						ERROR_MESSAGE_EXTRA_NAME);
-				if (errorMessage==null) errorMessage="";
+				String errorMessage;
+				if (data!=null)
+				{
+					errorMessage=data.getStringExtra(FacebookAuthActivity.
+							ERROR_MESSAGE_EXTRA_NAME);
+					if (errorMessage==null) errorMessage="";
+				}
+				else errorMessage="";
 				throw new RuntimeException(errorMessage);
 			}
 		}
