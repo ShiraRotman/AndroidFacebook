@@ -16,6 +16,9 @@
         <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:text="Search" android:id="@+id/search_button"/>
     </LinearLayout>
+    <EditText android:id="@+id/path_edit" android:layout_width="fill_parent"
+        android:layout_height="wrap_content" android:hint="Enter path..."
+        android:textSize="12sp"/>
     <TextView android:layout_width="fill_parent" android:layout_height="fill_parent"
         android:id="@+id/result_text" android:background="@android:color/white"/>
 </LinearLayout>

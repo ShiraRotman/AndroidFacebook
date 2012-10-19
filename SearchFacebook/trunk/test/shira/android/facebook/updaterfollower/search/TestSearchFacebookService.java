@@ -30,14 +30,22 @@ public class TestSearchFacebookService extends Activity
 		{
 			Map<String,String> searchParamsMap=new HashMap<String,String>();
 			searchParamsMap.put("access_token",accessToken);
-			EditText queryParamEdit=(EditText)findViewById(R.id.query_edit);
-			searchParamsMap.put("q",queryParamEdit.getEditableText().toString());
-			queryParamEdit=(EditText)findViewById(R.id.type_edit);
-			searchParamsMap.put("type",queryParamEdit.getEditableText().toString());
-			queryParamEdit=(EditText)findViewById(R.id.category_edit);
-			String categoriesInput=queryParamEdit.getEditableText().toString();
-			if (categoriesInput!=null)
+			EditText queryPathEdit=(EditText)findViewById(R.id.path_edit);
+			String queryPath=queryPathEdit.getEditableText().toString();
+			if (!queryPath.equals("")) searchParamsMap.put("path",queryPath);
+			else
 			{
+				EditText queryParamEdit=(EditText)findViewById(R.id.query_edit);
+				searchParamsMap.put("q",queryParamEdit.getEditableText().
+						toString());
+				queryParamEdit=(EditText)findViewById(R.id.type_edit);
+				searchParamsMap.put("type",queryParamEdit.getEditableText().
+						toString());
+				queryParamEdit=(EditText)findViewById(R.id.category_edit);
+				String categoriesInput=queryParamEdit.getEditableText().
+						toString();
+				/*if (!categoriesInput.equals(""))
+				{*/
 				String[] categories=categoriesInput.split(",");
 				if (extraCriteria==null)
 				{
@@ -47,6 +55,7 @@ public class TestSearchFacebookService extends Activity
 				}
 				//else categoriesSet=extraCriteria.categories;
 				else extraCriteria.setCategories(categories);
+				//}
 			}
 			if (thresholdTester==null) 
 				thresholdTester=new SearchThresholdTester(); 

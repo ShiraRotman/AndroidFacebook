@@ -238,6 +238,8 @@ public class SearchFacebookService extends Service
 			thresholdTester) throws Exception
 	{
 		List<Map<String,Object>> resultDataList=new ArrayList<Map<String,Object>>();
+		String queryPath=searchQueryMap.remove("path");
+		if (queryPath==null) queryPath="search";
 		StringBuilder queryStringBuilder=new StringBuilder();
 		queryStringBuilder.append("?");
 		for (String queryParam : searchQueryMap.keySet())
@@ -250,7 +252,7 @@ public class SearchFacebookService extends Service
 		/*If there are no search parameters, the "?" will be deleted and the 
 		 *address will have no query string, which is still legal*/
 		queryStringBuilder.deleteCharAt(queryStringBuilder.length()-1);
-		String queryAddress="https://graph.facebook.com/search" + 
+		String queryAddress="https://graph.facebook.com/" + queryPath + 
 				queryStringBuilder.toString();
 		Log.i("Facebook",queryAddress);
 		String origPrevAddress=null,origNextAddress=null;
