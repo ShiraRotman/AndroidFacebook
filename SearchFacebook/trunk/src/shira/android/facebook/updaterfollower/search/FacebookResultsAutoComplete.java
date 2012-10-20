@@ -5,7 +5,12 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
 
@@ -18,6 +23,46 @@ public class FacebookResultsAutoComplete extends FrameLayout
 	private AutoCompleteTextView resultsAutoComplete;
 	private FacebookResultsAdapter resultsAdapter;
 	private String[] categories;
+	private int listPosition=AdapterView.INVALID_POSITION;
+	
+	/*This listener lets the component follow changes to the selected item in 
+	 *the list. It also handles touch mode, when there's actually no "selection"
+	 *(instead, there are item clicks). In the future this can be used to build 
+	 *a more general component that directly inherits from AutoCompleteTextView 
+	 *and adds this functionality.*/
+	private class ListPositionChangeListener implements TextWatcher,AdapterView.
+			OnItemClickListener,AdapterView.OnItemSelectedListener
+	{
+		@Override
+		public void onItemSelected(AdapterView<?> parent,View view,int position,
+				long id) 
+		{ listPosition=position; }
+
+		@Override public void onNothingSelected(AdapterView<?> parent) 
+		{ listPosition=AdapterView.INVALID_POSITION; }
+
+		@Override
+		public void onItemClick(AdapterView<?> parent,View view,int position,
+				long id) 
+		{ 
+			listPosition=position;
+			Log.i("Auto","Position: " + position);
+		}
+
+		@Override public void afterTextChanged(Editable s) 
+		{ 
+			listPosition=AdapterView.INVALID_POSITION;
+			Log.i("Auto","Nothing");
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s,int start,int count,
+				int after) { }
+
+		@Override
+		public void onTextChanged(CharSequence s,int start,int before,
+				int count) { }
+	}
 	
 	public FacebookResultsAutoComplete(Context context)
 	{ this(context,(String[])null); }
@@ -71,6 +116,10 @@ public class FacebookResultsAutoComplete extends FrameLayout
 		/*ViewGroup.LayoutParams layoutParams=new ViewGroup.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.
 				MATCH_PARENT);*/
+		ListPositionChangeListener listPositionListener=new ListPositionChangeListener();
+		resultsAutoComplete.setOnItemClickListener(listPositionListener);
+		resultsAutoComplete.setOnItemSelectedListener(listPositionListener);
+		resultsAutoComplete.addTextChangedListener(listPositionListener);
 		this.addView(resultsAutoComplete); //,layoutParams);
 	}
 	
@@ -86,6 +135,59 @@ public class FacebookResultsAutoComplete extends FrameLayout
 	public int getMaxResults() { return resultsAdapter.getMaxResults(); }
 	public void setMaxResults(int maxResults) 
 	{ resultsAdapter.setMaxResults(maxResults); }
+	
+	/*Since AutoCompleteTextView inherits only from EditText and (probably) 
+	 *wraps an AdapterView for adding the suggestions list, there's no direct 
+	 *way to call the methods AdapterView supplies for getting information on 
+	 *the items in the list. The functions added here fill the gap, and also 
+	 *handle the touch mode issue of no item "selection", by using the current 
+	 *position in the list as being tracked by the ListPositionChangeListener 
+	 *(see above). This functionality will also be transferred to the custom 
+	 *component enhancing AutoCompleteTextView.*/
+	
+	public int getCount() { return resultsAdapter.getCount(); }
+	
+	public Object getItemAtPosition(int position)
+	{ return resultsAdapter.getItem(position); }
+	
+	public long getItemIdAtPosition(int position)
+	{ return resultsAdapter.getItemId(position); }
+	
+	/*The functions dealing with the current list position use a slightly 
+	 *different convention in their names than the counterpart functions in the 
+	 *AdapterView class (namely, replacing the term "selected" with "current").
+	 *This is done in order to distinguish the meaning and functionality between
+	 *the 2 sets. The functions in AdapterView work with the "selected" item in 
+	 *the list, and thus can't be used when the device is in touch mode, since 
+	 *there's no item "selection". Contrary to them, the functions in this class,
+	 *as was mentioned above, can also handle touch mode by using the tracked 
+	 *position (it's used for all modes), and thus have different names. 
+	 *The functions that deal with an arbitrary position or are not dependent of 
+	 *a position at all (defined above) work the same way for the 2 classes, so 
+	 *they use the same names.*/
+	
+	public Object getCurrentItem() 
+	{
+		if (listPosition!=AdapterView.INVALID_POSITION) 
+			return resultsAdapter.getItem(listPosition);
+		else return null;
+	}
+	
+	public long getCurrentItemId()
+	{
+		if (listPosition!=AdapterView.INVALID_POSITION) 
+			return resultsAdapter.getItemId(listPosition);
+		else return AdapterView.INVALID_ROW_ID;
+	}
+	
+	public int getCurrentItemPosition() { return listPosition; }
+	
+	public View getCurrentView() 
+	{
+		if (listPosition!=AdapterView.INVALID_POSITION)
+			return resultsAdapter.getView(listPosition,null,null);
+		else return null;
+	}
 	
 	@Override protected Parcelable onSaveInstanceState()
 	{
