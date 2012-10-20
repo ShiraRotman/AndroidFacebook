@@ -170,6 +170,7 @@ public class FacebookResultsAdapter extends BaseAdapter implements Filterable
 		@Override 
 		protected FilterResults performFiltering(CharSequence constraint) 
 		{
+			if ((constraint==null)||(constraint.equals(""))) return null; 
 			Map<String,String> searchParamsMap=new HashMap<String,String>();
 			searchParamsMap.put("q",constraint.toString());
 			searchParamsMap.put("type","page");
@@ -206,7 +207,7 @@ public class FacebookResultsAdapter extends BaseAdapter implements Filterable
 		protected void publishResults(CharSequence constraint,FilterResults 
 				filterResults) 
 		{
-			if (filterResults.count==-1) results=null;
+			if ((filterResults==null)||(filterResults.count==-1)) results=null;
 			else
 			{
 				List<Map<String,Object>> resultsDataList=(List<Map<String,Object>>)
