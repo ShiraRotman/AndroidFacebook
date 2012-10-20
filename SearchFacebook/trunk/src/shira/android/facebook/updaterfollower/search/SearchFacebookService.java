@@ -344,21 +344,22 @@ public class SearchFacebookService extends Service
 		if ((responseObject instanceof Boolean)&&(!(Boolean)responseObject)) 
 			throw new FacebookException("false");
 		Map<String,Object> responseObjectMap=(Map<String,Object>)responseObject;
-		List<Map<String,Object>> responseDataArray=null;
-		Map<String,Object> pagingObjectMap=null;
-		for (String propertyName:responseObjectMap.keySet())
+		Map<String,Object> errorObject=(Map<String,Object>)responseObjectMap.
+				get("error");
+		if (errorObject!=null) 
+			throw new FacebookException(errorObject.toString());
+		List<Map<String,Object>> responseDataArray=(List<Map<String,Object>>)
+				responseObjectMap.get("data");
+		if (responseDataArray==null)
 		{
-			if (propertyName.equals("error"))
-			{
-				throw new FacebookException(responseObjectMap.get("error").
-						toString());
-			}
-			else if (propertyName.equals("data"))
-				responseDataArray=(List<Map<String,Object>>)responseObjectMap.
-						get("data");
-			else if (propertyName.equals("paging"))
-				pagingObjectMap=(Map<String,Object>)responseObjectMap.get("paging");
+			responseDataArray=new ArrayList<Map<String,Object>>();
+			responseDataArray.add(responseObjectMap);
+			/*In the future may not return immediately if additional processing 
+			 *is required, such as filtering*/
+			return responseDataArray;
 		}
+		Map<String,Object> pagingObjectMap=(Map<String,Object>)responseObjectMap.
+				get("paging");
 		
 		//Apply additional filtering by the extra criteria
 		boolean filtered=false;
