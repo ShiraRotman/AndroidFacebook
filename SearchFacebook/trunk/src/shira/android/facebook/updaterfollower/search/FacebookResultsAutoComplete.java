@@ -2,8 +2,10 @@ package shira.android.facebook.updaterfollower.search;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.AttributeSet;
 import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
 
@@ -18,15 +20,47 @@ public class FacebookResultsAutoComplete extends FrameLayout
 	private String[] categories;
 	
 	public FacebookResultsAutoComplete(Context context)
-	{ this(context,null); }
+	{ this(context,(String[])null); }
 	
 	public FacebookResultsAutoComplete(Context context,String[] categories)
 	{ this(context,categories,FacebookResultsAdapter.DEFAULT_MAX_RESULTS); }
+	
+	public FacebookResultsAutoComplete(Context context,AttributeSet attributes)
+	{ this(context,attributes,0); }
+	
+	public FacebookResultsAutoComplete(Context context,AttributeSet attributes,
+			int defStyle)
+	{
+		super(context,attributes,defStyle);
+		initialize(context);
+		TypedArray attributesArray=context.obtainStyledAttributes(attributes,
+				R.styleable.ResultsAutoComplete,defStyle,defStyle);
+		CharSequence[] categoriesCS=attributesArray.getTextArray(R.styleable.
+				ResultsAutoComplete_categories);
+		int maxResults=attributesArray.getInt(R.styleable.ResultsAutoComplete_max_results,
+				FacebookResultsAdapter.DEFAULT_MAX_RESULTS);
+		attributesArray.recycle();
+		if (categoriesCS!=null)
+		{
+			String[] categories=new String[categoriesCS.length];
+			for (int index=0;index<categoriesCS.length;index++)
+				categories[index]=categoriesCS[index].toString();
+			setCategories(categories);
+		}
+		setMaxResults(maxResults);
+	}
 	
 	public FacebookResultsAutoComplete(Context context,String[] categories,
 			int maxResults)
 	{
 		super(context);
+		initialize(context);
+		setCategories(categories);
+		setMaxResults(maxResults);
+	}
+	
+	private void initialize(Context context)
+	{
 		if (!(context instanceof Activity))
 			throw new ClassCastException("Only activities are supported as " +
 					"context objects for this view!");
@@ -38,8 +72,6 @@ public class FacebookResultsAutoComplete extends FrameLayout
 				ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.
 				MATCH_PARENT);*/
 		this.addView(resultsAutoComplete); //,layoutParams);
-		setCategories(categories);
-		setMaxResults(maxResults);
 	}
 	
 	public String[] getCategories() 

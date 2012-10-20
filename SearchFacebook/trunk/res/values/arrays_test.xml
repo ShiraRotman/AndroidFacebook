@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="results_auto_test_categories">
+        <item>Book</item>
+        <item>Movie</item>
+    </string-array>
+</resources>

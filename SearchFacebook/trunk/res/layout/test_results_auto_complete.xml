@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shira.android.facebook.updaterfollower.search.FacebookResultsAutoComplete 
+    xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    xmlns:search="http://schemas.android.com/apk/res/shira.android.facebook.updaterfollower.search"
+    search:categories="@null" search:max_results="5"/>

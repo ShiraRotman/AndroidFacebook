@@ -9,10 +9,11 @@ public class TestResultsAutoComplete extends Activity
 	@Override protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		FacebookResultsAutoComplete resultsAutoComplete=new 
+		/*FacebookResultsAutoComplete resultsAutoComplete=new 
 				FacebookResultsAutoComplete(this);
 		LayoutParams layoutParams=new LayoutParams(LayoutParams.MATCH_PARENT,
 				LayoutParams.WRAP_CONTENT);
-		setContentView(resultsAutoComplete,layoutParams);
+		setContentView(resultsAutoComplete,layoutParams);*/
+		setContentView(R.layout.test_results_auto_complete);
 	}
 }

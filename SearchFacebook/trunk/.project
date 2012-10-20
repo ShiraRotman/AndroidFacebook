@@ -41,5 +41,15 @@
 			<type>2</type>
 			<location>G:/AndroidProjects/FacebookGeneralServices/src</location>
 		</link>
+		<link>
+			<name>search_gen</name>
+			<type>2</type>
+			<location>G:/AndroidProjects/FacebookUpdaterFollower/SearchFacebook/gen</location>
+		</link>
+		<link>
+			<name>search_src</name>
+			<type>2</type>
+			<location>G:/AndroidProjects/FacebookUpdaterFollower/SearchFacebook/src</location>
+		</link>
 	</linkedResources>
 </projectDescription>
