@@ -136,6 +136,11 @@ public class FacebookResultsAutoComplete extends FrameLayout
 	public void setMaxResults(int maxResults) 
 	{ resultsAdapter.setMaxResults(maxResults); }
 	
+	public String getTextForAutoCompletion()
+	{ return resultsAutoComplete.getText().toString(); }
+	public void setTextForAutoCompletion(String text)
+	{ resultsAutoComplete.setText(text); }
+	
 	/*Since AutoCompleteTextView inherits only from EditText and (probably) 
 	 *wraps an AdapterView for adding the suggestions list, there's no direct 
 	 *way to call the methods AdapterView supplies for getting information on 
@@ -187,6 +192,23 @@ public class FacebookResultsAutoComplete extends FrameLayout
 		if (listPosition!=AdapterView.INVALID_POSITION)
 			return resultsAdapter.getView(listPosition,null,null);
 		else return null;
+	}
+	
+	/*The name of the setter function for the list position is slightly 
+	 *different in convention than its counterpart (setSelection), not only by 
+	 *replacing "selection" with "current", but also by adding a few more words 
+	 *to make the meaning clearer.*/
+	public void setCurrentItemPosition(int listPosition)
+	{
+		if (((listPosition<0)||(listPosition>=resultsAdapter.getCount()))&&
+				(listPosition!=AdapterView.INVALID_POSITION))
+			throw new IllegalArgumentException("The position in the suggestions " +
+					"list must be between 0 and the number of suggestions, " + 
+					"which right now stands on " + resultsAdapter.getCount() +
+					", or alternatively, set to the value of " + AdapterView.
+					INVALID_POSITION + ", which indicates no current position " +
+					"(this is the only valid value if there are no suggestions)");
+		this.listPosition=listPosition;
 	}
 	
 	@Override protected Parcelable onSaveInstanceState()
