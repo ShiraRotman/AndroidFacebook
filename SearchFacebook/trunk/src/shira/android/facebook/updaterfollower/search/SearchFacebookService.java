@@ -21,6 +21,8 @@ public class SearchFacebookService extends Service
 			"facebook.EXECUTOR";
 	public static final String DEFUALT_ACCESS_TOKEN_KEY_NAME="shira.android." +
 			"facebook.ACCESS_TOKEN";*/
+	public static final String ACTION_SEARCH_FACEBOOK_SERVICE="shira.android." +
+			"facebook.action.SEARCH";
 	public static final String FAILED_FILTER_KEY_NAME="failed_filter";
 	public static final Pattern limitPattern=Pattern.compile("\\&limit=\\d+");
 	
