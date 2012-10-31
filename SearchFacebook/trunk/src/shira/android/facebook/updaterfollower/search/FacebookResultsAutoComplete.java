@@ -8,7 +8,7 @@ import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.Log;
+//import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -22,6 +22,7 @@ public class FacebookResultsAutoComplete extends FrameLayout
 	
 	private AutoCompleteTextView resultsAutoComplete;
 	private FacebookResultsAdapter resultsAdapter;
+	private OnPositionChangedListener positionChangedListener;
 	private String[] categories;
 	private int listPosition=AdapterView.INVALID_POSITION;
 	
@@ -29,30 +30,64 @@ public class FacebookResultsAutoComplete extends FrameLayout
 	 *the list. It also handles touch mode, when there's actually no "selection"
 	 *(instead, there are item clicks). In the future this can be used to build 
 	 *a more general component that directly inherits from AutoCompleteTextView 
-	 *and adds this functionality.*/
+	 *and adds this functionality, or even an all-encompassing component that's 
+	 *the counterpart of AdapterView.*/
 	private class ListPositionChangeListener implements TextWatcher,AdapterView.
 			OnItemClickListener,AdapterView.OnItemSelectedListener
 	{
+		private AdapterView<?> resultsListView;
+		
 		@Override
 		public void onItemSelected(AdapterView<?> parent,View view,int position,
 				long id) 
-		{ listPosition=position; }
+		{ 
+			listPosition=position;
+			resultsListView=parent;
+			notifyPositionChangedToValid(parent);
+		}
 
 		@Override public void onNothingSelected(AdapterView<?> parent) 
-		{ listPosition=AdapterView.INVALID_POSITION; }
+		{ 
+			listPosition=AdapterView.INVALID_POSITION;
+			resultsListView=parent;
+			notifyPositionChangedToInvalid(parent);
+		}
 
 		@Override
 		public void onItemClick(AdapterView<?> parent,View view,int position,
 				long id) 
 		{ 
 			listPosition=position;
-			Log.i("Auto","Position: " + position);
+			//Log.i("Auto","Position: " + position);
+			resultsListView=parent;
+			notifyPositionChangedToValid(parent);
 		}
 
 		@Override public void afterTextChanged(Editable s) 
 		{ 
 			listPosition=AdapterView.INVALID_POSITION;
-			Log.i("Auto","Nothing");
+			//Log.i("Auto","Nothing");
+			notifyPositionChangedToInvalid(resultsListView);
+		}
+		
+		private void notifyPositionChangedToValid(AdapterView<?> resultsListView)
+		{
+			if (positionChangedListener!=null)
+			{
+				View positionView=resultsAdapter.getView(listPosition,null,null);
+				long positionID=resultsAdapter.getItemId(listPosition);
+				positionChangedListener.onPositionChangedToValid(resultsListView,
+						positionView,listPosition,positionID);
+			}
+		}
+		
+		private void notifyPositionChangedToInvalid(AdapterView<?> resultsListView)
+		{ 
+			if (positionChangedListener!=null)
+			{
+				positionChangedListener.onPositionChangedToInvalid(
+						resultsListView);
+			}
 		}
 
 		@Override
@@ -62,6 +97,16 @@ public class FacebookResultsAutoComplete extends FrameLayout
 		@Override
 		public void onTextChanged(CharSequence s,int start,int before,
 				int count) { }
+	}
+	
+	/*This event handler interface may also be moved in the future to the 
+	 *general component that's the counterpart of AdapterView (see above)*/
+	public static interface OnPositionChangedListener
+	{
+		public void onPositionChangedToValid(AdapterView<?> parent,View view,
+				int position,long id);
+		
+		public void onPositionChangedToInvalid(AdapterView<?> parent);
 	}
 	
 	public FacebookResultsAutoComplete(Context context)
@@ -140,6 +185,9 @@ public class FacebookResultsAutoComplete extends FrameLayout
 	{ return resultsAutoComplete.getText().toString(); }
 	public void setTextForAutoCompletion(String text)
 	{ resultsAutoComplete.setText(text); }
+	
+	public void setOnPositionChangedListener(OnPositionChangedListener listener)
+	{ this.positionChangedListener=listener; }
 	
 	/*Since AutoCompleteTextView inherits only from EditText and (probably) 
 	 *wraps an AdapterView for adding the suggestions list, there's no direct 
